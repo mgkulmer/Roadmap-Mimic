@@ -57,6 +57,7 @@ export default function App() {
   return (
     <>
       <header className="top">
+        <img className="logo" src="/mimic.png" alt="" />
         <h1>Roadmap Mimic</h1>
         <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>Review &amp; edit</button>
         <button className={tab === 'report' ? 'active' : ''} onClick={() => setTab('report')}>PDF report</button>
@@ -77,8 +78,8 @@ export default function App() {
             onKeyDown={(e) => e.key === 'Enter' && (e.ctrlKey || e.metaKey) && run()}
           />
           <div className="bar">
-            <button className="primary" disabled={loading || !draft.trim()} onClick={run}>Run JQL</button>
-            <button disabled={loading || draft === original} onClick={() => { setDraft(original); setQuick(''); load('', ''); }}>Reset to saved filter</button>
+            <button className="primary" disabled={loading || !draft.trim()} onClick={run}>Run</button>
+            <button disabled={loading || draft === original} onClick={() => { setDraft(original); setQuick(''); load('', ''); }}>Reset Filter</button>
             <span className="hint">Edits are temporary and never change the saved Jira filter. Ctrl+Enter to run.</span>
           </div>
         </section>

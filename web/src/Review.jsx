@@ -177,7 +177,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
               </td>
               {shown.map((c) => {
                 const isEdit = edit && edit.key === i.key && edit.field === c.key;
-                const cls = [c.editable ? 'editable' : '', /note/i.test(c.key) ? 'notes' : '', WRAPPING.includes(c.key) ? 'wrap' : 'fit'].join(' ');
+                const cls = [c.editable ? 'editable' : '', /note/i.test(c.key) ? 'notes' : '', WRAPPING.includes(c.key) ? 'wrap' : 'fit', SKULL_WHEN_EMPTY.includes(c.key) && !i.cells[c.key] ? 'center' : ''].join(' ');
                 return (
                   <td key={c.key} className={cls} title={c.editable ? 'Double-click to edit' : undefined}
                       onDoubleClick={() => c.editable && !busy && setEdit({ key: i.key, field: c.key, value: i.cells[c.key] })}>

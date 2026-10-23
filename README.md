@@ -18,3 +18,9 @@ Field names are resolved to Jira field IDs at runtime; override with `FIELD_*` i
 
 ## Tests
 `npm test`
+
+## UI theme
+
+The header now shows a mimic (treasure-chest monster) image scaled to the header height, a Creepster display font, and a plum/gold/magenta palette drawn from the image. Table labels, buttons and icons keep their original colors. Other changes: empty-value skulls are centered, **Run JQL** is now **Run**, and **Reset to saved filter** is now **Reset Filter**.
+
+**Mimic image courtesy of Ebonyinkstone of deviantart.
