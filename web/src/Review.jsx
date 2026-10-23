@@ -22,6 +22,31 @@ function FaIcon({ icon, className = '', label }) {
 const SKULL_WHEN_EMPTY = ['roadmap', 'security'];
 const WRAPPING = ['summary', 'releaseNote', 'publicNotes'];
 
+const FILTERABLE = ['status', 'issueType'];
+
+function ColumnFilter({ col, values, selected, onChange }) {
+  const [open, setOpen] = useState(false);
+  const toggleVal = (v) => { const n = new Set(selected); n.has(v) ? n.delete(v) : n.add(v); onChange(n); };
+  return (
+    <span className="col-filter">
+      <button type="button" className={'filter-btn' + (selected.size ? ' active' : '')} onClick={() => setOpen(!open)} aria-expanded={open}>
+        {col.label} ▾{selected.size > 0 && <span className="count">{selected.size}</span>}
+      </button>
+      {open && (
+        <div className="filter-menu">
+          {values.map((v) => (
+            <label key={v}><input type="checkbox" checked={selected.has(v)} onChange={() => toggleVal(v)} /> {v || '(empty)'}</label>
+          ))}
+          <div className="filter-actions">
+            <button type="button" onClick={() => onChange(new Set())} disabled={!selected.size}>Clear</button>
+            <button type="button" onClick={() => setOpen(false)}>Done</button>
+          </div>
+        </div>
+      )}
+    </span>
+  );
+}
+
 function HeaderLabel({ col }) {
   const tip = HEADER_TIPS[col.key];
   if (!tip) return col.label;
@@ -69,6 +94,8 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
   const shown = meta.columns.filter((c) => !['project', 'labels'].includes(c.key));
   const [q, setQ] = useState('');
   const [onlyHidden, setOnlyHidden] = useState(false);
+  const [filters, setFilters] = useState({});
+  const filterValues = useMemo(() => Object.fromEntries(FILTERABLE.map((k) => [k, [...new Set(issues.map((i) => i.cells[k] || ''))].sort()])), [issues]);
   const [sel, setSel] = useState(new Set());
   const [bulkField, setBulkField] = useState(editable[0]?.key);
   const [bulkValue, setBulkValue] = useState('');
@@ -78,6 +105,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
 
   const rows = issues.filter((i) => {
     if (onlyHidden && i.visibility.visible) return false;
+    for (const k of FILTERABLE) if (filters[k]?.size && !filters[k].has(i.cells[k] || '')) return false;
     if (!q) return true;
     return Object.values(i.cells).join(' ').toLowerCase().includes(q.toLowerCase());
   });
@@ -146,7 +174,9 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
           <tr>
             <th><input type="checkbox" checked={allSel} onChange={() => setSel(allSel ? new Set() : new Set(rows.map((r) => r.key)))} /></th>
             <th className="criteria">Criteria</th>
-            {shown.map((c) => <th key={c.key}><HeaderLabel col={c} /></th>)}
+            {shown.map((c) => <th key={c.key}>{FILTERABLE.includes(c.key)
+              ? <ColumnFilter col={c} values={filterValues[c.key]} selected={filters[c.key] || new Set()} onChange={(v) => setFilters({ ...filters, [c.key]: v })} />
+              : <HeaderLabel col={c} />}</th>)}
           </tr>
         </thead>
         <tbody>
