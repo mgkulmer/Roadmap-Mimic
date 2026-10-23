@@ -19,7 +19,7 @@ export const config = {
     publicNotes: process.env.FIELD_PUBLIC_NOTES || 'Public Notes',
   },
   // Fix Versions that qualify as public roadmap buckets; a numeric release (e.g. 26.04.00) also qualifies.
-  fixVersionNames: list(process.env.FIX_VERSION_NAMES, ['Up Next', 'Current Development', 'Following Release', 'Future Consideration']),
+  fixVersionNames: list(process.env.FIX_VERSION_NAMES, ['Up Next', 'Current Development', 'Following Release', 'Future Consideration', 'General availability']),
   fixVersionReleasePattern: process.env.FIX_VERSION_RELEASE_PATTERN || '^\\d+(\\.\\d+)+$',
   // Security levels (case-insensitive exact match) considered public. An unset level is NOT public.
   publicSecurityLevels: list(process.env.PUBLIC_SECURITY_LEVELS, ['Public-Global']),
