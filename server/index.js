@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { loadIssues, loadMeta, getResolvedFields, COLUMNS } from './issues.js';
-import { toJiraValue, updateIssue } from './jira.js';
+import { toJiraValue, updateIssue, getFilter } from './jira.js';
 import { renderPdf } from './pdf.js';
 
 const app = express();
@@ -15,10 +15,12 @@ const wrap = (fn) => (req, res) =>
 
 const jqlList = (vals) => vals.map((v) => `"${String(v).replace(/"/g, '\\"')}"`).join(', ');
 
-app.get('/api/issues', wrap(async (_req, res) => {
-  const { jql, issues } = await loadIssues();
+app.get('/api/issues', wrap(async (req, res) => {
+  const filter = await getFilter();
+  const custom = typeof req.query.jql === 'string' ? req.query.jql : '';
+  const { jql, issues } = await loadIssues('', custom);
   const meta = await loadMeta(issues);
-  res.json({ jql, issues, meta, baseUrl: config.baseUrl });
+  res.json({ filter, jql, issues, meta, baseUrl: config.baseUrl });
 }));
 
 // Batch update: { keys: [], field: 'roadmap', value: 'Yes' } -> per-issue results.
@@ -48,7 +50,7 @@ async function buildReport(body) {
   if (labels.length) parts.push(`labels in (${jqlList(labels)})`);
   if (projects.length) parts.push(`project in (${jqlList(projects)})`);
   if (fixVersions.length) parts.push(`fixVersion in (${jqlList(fixVersions)})`);
-  const { issues, jql } = await loadIssues(parts.join(' AND '));
+  const { issues, jql } = await loadIssues(parts.join(' AND '), body.baseJql || '');
   const picked = publicOnly ? issues.filter((i) => i.visibility.visible) : issues;
   const wanted = ['key', 'summary', 'fixVersion', ...(body.columns || [])];
   const columns = [...new Set(wanted)].map((k) => COLUMNS.find((c) => c.key === k)).filter(Boolean);

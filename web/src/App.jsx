@@ -7,22 +7,30 @@ export default function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [applied, setApplied] = useState(''); // session-only JQL override; '' = saved filter
+  const [draft, setDraft] = useState('');
 
-  const load = async () => {
+  const load = async (jql = applied) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/issues');
+      const res = await fetch('/api/issues' + (jql ? `?jql=${encodeURIComponent(jql)}` : ''));
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || res.statusText);
       setData(body);
+      setApplied(jql);
+      setDraft((d) => (jql ? d : body.filter.jql));
     } catch (e) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(''); }, []);
+
+  const original = data?.filter.jql ?? '';
+  const modified = applied !== '';
+  const run = () => load(draft.trim() === original.trim() ? '' : draft);
 
   return (
     <>
@@ -30,16 +38,37 @@ export default function App() {
         <h1>Roadmap Mimic</h1>
         <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>Review &amp; edit</button>
         <button className={tab === 'report' ? 'active' : ''} onClick={() => setTab('report')}>PDF report</button>
-        <button onClick={load} disabled={loading}>{loading ? 'Loading…' : '↻ Refresh'}</button>
+        <button onClick={() => load()} disabled={loading}>{loading ? 'Loading…' : '↻ Refresh'}</button>
       </header>
+      {data && (
+        <section className="filterbar">
+          <div className="filtertitle">
+            <span className="label">Jira filter</span>
+            <strong>{data.filter.name}</strong>
+            {modified && <span className="pill bad">JQL modified (this session only)</span>}
+          </div>
+          <textarea
+            aria-label="Filter JQL"
+            rows={Math.min(8, Math.max(2, draft.split('\n').length))}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && (e.ctrlKey || e.metaKey) && run()}
+          />
+          <div className="bar">
+            <button className="primary" disabled={loading || !draft.trim()} onClick={run}>Run JQL</button>
+            <button disabled={loading || draft === original} onClick={() => { setDraft(original); load(''); }}>Reset to saved filter</button>
+            <span className="hint">Edits are temporary and never change the saved Jira filter. Ctrl+Enter to run.</span>
+          </div>
+        </section>
+      )}
       <main>
         {error && <div className="error">{error}</div>}
         {data?.meta.missingFields.length > 0 && (
           <div className="error">Jira fields not found: {data.meta.missingFields.join(', ')}. Set FIELD_* in .env.</div>
         )}
         {!data && loading && <div className="info">Loading issues from Jira…</div>}
-        {data && tab === 'review' && <Review data={data} reload={load} />}
-        {data && tab === 'report' && <Report meta={data.meta} />}
+        {data && tab === 'review' && <Review data={data} reload={() => load()} />}
+        {data && tab === 'report' && <Report meta={data.meta} baseJql={applied} />}
       </main>
     </>
   );

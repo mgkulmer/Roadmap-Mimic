@@ -53,9 +53,9 @@ export function toIssue(raw, fields) {
   };
 }
 
-export async function loadIssues(extraJql = '') {
+export async function loadIssues(extraJql = '', overrideJql = '') {
   const fields = await getResolvedFields();
-  const base = stripOrderBy(await getBaseJql());
+  const base = stripOrderBy(overrideJql.trim() || (await getBaseJql()));
   const jql = `(${base || 'project is not EMPTY'})${extraJql ? ' AND ' + extraJql : ''} ORDER BY key ASC`;
   const ids = [
     'summary', 'status', 'issuetype', 'parent', 'project', 'labels', 'fixVersions',

@@ -50,14 +50,19 @@ export async function resolveField(name) {
   return matches.find((f) => !f.custom) || matches[0] || null;
 }
 
-export async function getBaseJql() {
-  if (config.filterId) return (await jira(`/filter/${config.filterId}`)).jql;
+export async function getFilter() {
+  if (config.filterId) {
+    const f = await jira(`/filter/${config.filterId}`);
+    return { name: f.name, jql: f.jql };
+  }
   const res = await jira(`/filter/search?filterName=${encodeURIComponent(config.filterName)}&expand=jql`);
   const hit =
     res.values.find((f) => f.name.toLowerCase() === config.filterName.toLowerCase()) || res.values[0];
   if (!hit) throw new Error(`Filter "${config.filterName}" not found. Set JIRA_FILTER_ID in .env.`);
-  return hit.jql;
+  return { name: hit.name, jql: hit.jql };
 }
+
+export const getBaseJql = async () => (await getFilter()).jql;
 
 export const stripOrderBy = (jql) => jql.replace(/\border\s+by\b[\s\S]*$/i, '').trim();
 

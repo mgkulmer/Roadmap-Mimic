@@ -26,7 +26,7 @@ function MultiPick({ label, options, values, onChange }) {
 
 const DEFAULT_COLS = ['key', 'summary', 'fixVersion'];
 
-export default function Report({ meta }) {
+export default function Report({ meta, baseJql }) {
   const [labels, setLabels] = useState([]);
   const [projects, setProjects] = useState([]);
   const [fixVersions, setFixVersions] = useState([]);
@@ -38,7 +38,7 @@ export default function Report({ meta }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const body = () => JSON.stringify({ labels, projects, fixVersions, columns: extra, publicOnly, header, message });
+  const body = () => JSON.stringify({ baseJql, labels, projects, fixVersions, columns: extra, publicOnly, header, message });
   const post = (url) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body() });
 
   const run = async (fn) => {

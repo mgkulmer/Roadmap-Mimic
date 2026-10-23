@@ -30,7 +30,7 @@ function ValueInput({ options, value, onChange, ...rest }) {
 }
 
 export default function Review({ data, reload }) {
-  const { issues, meta, jql, baseUrl } = data;
+  const { issues, meta, baseUrl } = data;
   const editable = meta.columns.filter((c) => c.editable);
   const shown = meta.columns.filter((c) => !['project', 'labels'].includes(c.key));
   const [q, setQ] = useState('');
@@ -85,7 +85,9 @@ export default function Review({ data, reload }) {
         <input placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} />
         <label><input type="checkbox" checked={onlyHidden} onChange={(e) => setOnlyHidden(e.target.checked)} /> Not publicly visible only</label>
         <span>{rows.length} shown · {issues.filter((i) => i.visibility.visible).length}/{issues.length} public</span>
-        <span title={jql} style={{ color: '#667' }}>(filter JQL on hover)</span>
+      </div>
+      <div className="bar">
+        <a href="https://support.sirsidynix.com/product/roadmap" target="_blank" rel="noopener noreferrer">See it in the SDSC</a>
       </div>
       {msg && <div className={msg.ok ? 'info' : 'error'}>{msg.text}</div>}
       {sel.size > 0 && (
