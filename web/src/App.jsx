@@ -80,7 +80,7 @@ export default function App() {
           <div className="bar">
             <button className="primary" disabled={loading || !draft.trim()} onClick={run}>Run</button>
             <button disabled={loading || draft === original} onClick={() => { setDraft(original); setQuick(''); load('', ''); }}>Reset Filter</button>
-            <span className="hint">Edits are temporary and never change the saved Jira filter. Ctrl+Enter to run.</span>
+            <span className="hint"><em>Edits are temporary and never change the saved Jira filter.</em></span>
           </div>
         </section>
       )}
