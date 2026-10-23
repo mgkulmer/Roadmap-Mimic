@@ -43,7 +43,10 @@ export async function resolveField(name) {
   const fields = await getFields();
   const n = norm(name);
   const target = ALIASES[n] || n;
-  const matches = fields.filter((f) => norm(f.name) === target || norm(f.name) === n || f.id === name);
+  const loose = (s) => norm(s).replace(/s$/, '');
+  const exact = fields.filter((f) => norm(f.name) === target || norm(f.name) === n || f.id === name);
+  // Tolerate singular/plural differences, e.g. "Release Note" vs "Release Notes".
+  const matches = exact.length ? exact : fields.filter((f) => loose(f.name) === loose(target));
   return matches.find((f) => !f.custom) || matches[0] || null;
 }
 
