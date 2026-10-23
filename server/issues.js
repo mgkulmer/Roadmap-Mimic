@@ -12,7 +12,7 @@ export const COLUMNS = [
   { key: 'roadmap', label: 'Roadmap?', editable: true },
   { key: 'fixVersion', label: 'Fix Version', editable: true },
   { key: 'security', label: 'Security Level', editable: true },
-  { key: 'addToReleaseNote', label: 'Add to Release Note', editable: true },
+  { key: 'addToReleaseNote', label: 'Add to Release Notes', editable: true },
   { key: 'releaseNote', label: 'Release Note', editable: true },
   { key: 'publicNotes', label: 'Public Notes', editable: true },
 ];

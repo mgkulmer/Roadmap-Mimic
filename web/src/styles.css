@@ -17,8 +17,10 @@ a.btn:hover { background: #082f70; }
 .bar.quick { background: #e6f4f1; border: 1px solid #b5dcd3; padding: 8px 12px; border-radius: 6px; }
 .bar.quick label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
 .fa-icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -0.125em; }
-.fa-icon.epic { fill: #bf63f3; width: 18px; height: 18px; }
-.fa-icon.story { fill: #6a9a23; width: 22px; height: 22px; }
+.fa-icon.empty { fill: #9aa3b0; width: 16px; height: 16px; }
+td.fit { white-space: nowrap; }
+td.wrap.notes { min-width: 220px; max-width: 280px; }
+td.wrap:not(.notes) { min-width: 220px; max-width: 360px; }
 .th-tip { position: relative; display: inline-flex; align-items: center; gap: 5px; cursor: help; }
 .th-tip .help { fill: #556; width: 14px; height: 14px; }
 .th-tip .tip-text { display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; z-index: 10; width: 260px; padding: 8px 10px; background: #1c2533; color: #fff; border-radius: 6px; font-size: 12px; font-weight: 400; line-height: 1.4; white-space: normal; text-align: left; }

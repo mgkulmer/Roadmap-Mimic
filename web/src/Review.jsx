@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { faBolt, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
 
 const HEADER_TIPS = {
@@ -19,11 +19,8 @@ function FaIcon({ icon, className = '', label }) {
   );
 }
 
-function IssueType({ type }) {
-  if (type === 'Epic') return <FaIcon icon={faBolt} className="epic" label="Epic" />;
-  if (type === 'Functional Story') return <FaIcon icon={faMoneyBill} className="story" label="Functional Story" />;
-  return type;
-}
+const SKULL_WHEN_EMPTY = ['roadmap', 'security'];
+const WRAPPING = ['summary', 'releaseNote', 'publicNotes'];
 
 function HeaderLabel({ col }) {
   const tip = HEADER_TIPS[col.key];
@@ -41,7 +38,7 @@ const CRITERIA_LABELS = {
   roadmap: 'Roadmap?',
   fixVersion: 'Fix Version',
   security: 'Security Level',
-  addToReleaseNote: 'Add to Release Note',
+  addToReleaseNote: 'Add to Release Notes',
   releaseNote: 'Release Note',
 };
 
@@ -180,7 +177,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
               </td>
               {shown.map((c) => {
                 const isEdit = edit && edit.key === i.key && edit.field === c.key;
-                const cls = [c.editable ? 'editable' : '', /note/i.test(c.key) ? 'notes' : ''].join(' ');
+                const cls = [c.editable ? 'editable' : '', /note/i.test(c.key) ? 'notes' : '', WRAPPING.includes(c.key) ? 'wrap' : 'fit'].join(' ');
                 return (
                   <td key={c.key} className={cls} title={c.editable ? 'Double-click to edit' : undefined}
                       onDoubleClick={() => c.editable && !busy && setEdit({ key: i.key, field: c.key, value: i.cells[c.key] })}>
@@ -190,8 +187,8 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
                         onKeyDown={(e) => { if (e.key === 'Enter') saveInline(); if (e.key === 'Escape') setEdit(null); }} />
                     ) : c.key === 'key' ? (
                       <a href={`${baseUrl}/browse/${i.key}`} target="_blank" rel="noreferrer">{i.key}</a>
-                    ) : c.key === 'issueType' ? (
-                      <IssueType type={i.cells.issueType} />
+                    ) : SKULL_WHEN_EMPTY.includes(c.key) && !i.cells[c.key] ? (
+                      <FaIcon icon={faSkull} className="empty" label="Empty" />
                     ) : i.cells[c.key]}
                     {isEdit && <button className="primary" onClick={saveInline}>Save</button>}
                   </td>
