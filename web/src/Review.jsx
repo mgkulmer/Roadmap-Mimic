@@ -93,7 +93,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
   const editable = meta.columns.filter((c) => c.editable);
   const shown = meta.columns.filter((c) => !['project', 'labels'].includes(c.key));
   const [q, setQ] = useState('');
-  const [onlyHidden, setOnlyHidden] = useState(false);
+  const [vis, setVis] = useState('');
   const [filters, setFilters] = useState({});
   const filterValues = useMemo(() => Object.fromEntries(FILTERABLE.map((k) => [k, [...new Set(issues.map((i) => i.cells[k] || ''))].sort()])), [issues]);
   const [sel, setSel] = useState(new Set());
@@ -104,7 +104,8 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
   const [busy, setBusy] = useState(false);
 
   const rows = issues.filter((i) => {
-    if (onlyHidden && i.visibility.visible) return false;
+    if (vis === 'hidden' && i.visibility.visible) return false;
+    if (vis === 'public' && !i.visibility.visible) return false;
     for (const k of FILTERABLE) if (filters[k]?.size && !filters[k].has(i.cells[k] || '')) return false;
     if (!q) return true;
     return Object.values(i.cells).join(' ').toLowerCase().includes(q.toLowerCase());
@@ -145,7 +146,10 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
     <>
       <div className="bar">
         <input placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} />
-        <label><input type="checkbox" checked={onlyHidden} onChange={(e) => setOnlyHidden(e.target.checked)} /> Not publicly visible only</label>
+        <div className="seg" role="group" aria-label="Visibility filter">
+          <button type="button" className={vis === 'public' ? 'on' : ''} aria-pressed={vis === 'public'} onClick={() => setVis(vis === 'public' ? '' : 'public')}>Public</button>
+          <button type="button" className={vis === 'hidden' ? 'on' : ''} aria-pressed={vis === 'hidden'} onClick={() => setVis(vis === 'hidden' ? '' : 'hidden')}>Not Public</button>
+        </div>
         <a className="btn sdsc" href="https://support.sirsidynix.com/product/roadmap" target="_blank" rel="noopener noreferrer">SDSC</a>
       </div>
       <div className="bar quick">
