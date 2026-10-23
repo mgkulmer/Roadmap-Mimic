@@ -105,7 +105,7 @@ export default function Review({ data, reload }) {
         <thead>
           <tr>
             <th><input type="checkbox" checked={allSel} onChange={() => setSel(allSel ? new Set() : new Set(rows.map((r) => r.key)))} /></th>
-            <th>Public?</th>
+            <th className="criteria">Criteria</th>
             {shown.map((c) => <th key={c.key}>{c.label}</th>)}
           </tr>
         </thead>
@@ -113,13 +113,15 @@ export default function Review({ data, reload }) {
           {rows.map((i) => (
             <tr key={i.key} className={sel.has(i.key) ? 'sel' : ''}>
               <td><input type="checkbox" checked={sel.has(i.key)} onChange={() => toggle(i.key)} /></td>
-              <td>
-                {i.visibility.visible ? <span className="pill ok">Visible</span> : (
-                  <>
-                    <span className="pill bad">Hidden</span>
-                    {i.visibility.failing.map((f) => <span className="fail" key={f}>✗ {CRITERIA_LABELS[f]}</span>)}
-                  </>
-                )}
+              <td className="criteria">
+                <span className={`pill ${i.visibility.visible ? 'ok' : 'bad'} overall`}>{i.visibility.visible ? 'Visible' : 'Hidden'}</span>
+                <span className="crit-list">
+                  {Object.entries(CRITERIA_LABELS).map(([k, label]) => (
+                    <span key={k} className={`crit ${i.visibility.criteria[k] ? 'pass' : 'fail'}`}>
+                      {i.visibility.criteria[k] ? '✓' : '✗'} {label}
+                    </span>
+                  ))}
+                </span>
               </td>
               {shown.map((c) => {
                 const isEdit = edit && edit.key === i.key && edit.field === c.key;
