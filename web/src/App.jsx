@@ -9,8 +9,11 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [applied, setApplied] = useState(''); // session-only JQL override; '' = saved filter
   const [draft, setDraft] = useState('');
+  const [quick, setQuick] = useState(''); // selected project quick filter
+  const [preQuick, setPreQuick] = useState(''); // JQL before the quick filter was applied
+  const [projectOpts, setProjectOpts] = useState([]);
 
-  const load = async (jql = applied) => {
+  const load = async (jql = applied, q = quick) => {
     setLoading(true);
     setError('');
     try {
@@ -20,17 +23,36 @@ export default function App() {
       setData(body);
       setApplied(jql);
       setDraft((d) => (jql ? d : body.filter.jql));
+      if (!q) setProjectOpts(body.meta.projectList);
     } catch (e) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => { load(''); }, []);
+  useEffect(() => { load('', ''); }, []);
 
   const original = data?.filter.jql ?? '';
   const modified = applied !== '';
-  const run = () => load(draft.trim() === original.trim() ? '' : draft);
+  const run = () => {
+    setQuick('');
+    load(draft.trim() === original.trim() ? '' : draft, '');
+  };
+
+  const selectProject = (p) => {
+    if (!p) {
+      setQuick('');
+      setDraft(preQuick);
+      load(preQuick.trim() === original.trim() ? '' : preQuick, '');
+      return;
+    }
+    const base = quick ? preQuick : draft;
+    if (!quick) setPreQuick(base);
+    const jql = `(${base.replace(/\border\s+by\b[\s\S]*$/i, '').trim()}) AND project = "${p}"`;
+    setQuick(p);
+    setDraft(jql);
+    load(jql, p);
+  };
 
   return (
     <>
@@ -56,7 +78,7 @@ export default function App() {
           />
           <div className="bar">
             <button className="primary" disabled={loading || !draft.trim()} onClick={run}>Run JQL</button>
-            <button disabled={loading || draft === original} onClick={() => { setDraft(original); load(''); }}>Reset to saved filter</button>
+            <button disabled={loading || draft === original} onClick={() => { setDraft(original); setQuick(''); load('', ''); }}>Reset to saved filter</button>
             <span className="hint">Edits are temporary and never change the saved Jira filter. Ctrl+Enter to run.</span>
           </div>
         </section>
@@ -67,7 +89,7 @@ export default function App() {
           <div className="error">Jira fields not found: {data.meta.missingFields.join(', ')}. Set FIELD_* in .env.</div>
         )}
         {!data && loading && <div className="info">Loading issues from Jira…</div>}
-        {data && tab === 'review' && <Review data={data} reload={() => load()} />}
+        {data && tab === 'review' && <Review data={data} reload={() => load()} projects={projectOpts} quick={quick} onProject={selectProject} />}
         {data && tab === 'report' && <Report meta={data.meta} baseJql={applied} />}
       </main>
     </>

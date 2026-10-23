@@ -7,7 +7,6 @@ export const COLUMNS = [
   { key: 'summary', label: 'Summary' },
   { key: 'status', label: 'Status' },
   { key: 'issueType', label: 'Issue Type' },
-  { key: 'parent', label: 'Parent' },
   { key: 'project', label: 'Project' },
   { key: 'labels', label: 'Labels' },
   { key: 'roadmap', label: 'Roadmap?', editable: true },
@@ -34,10 +33,6 @@ export function toIssue(raw, fields) {
     summary: f.summary || '',
     status: f.status?.name || '',
     issueType: f.issuetype?.name || '',
-    parent:
-      f.parent && f.parent.fields?.issuetype?.name !== 'Epic'
-        ? `${f.parent.key}${f.parent.fields?.summary ? ' – ' + f.parent.fields.summary : ''}`
-        : '',
     project: f.project?.key || raw.key.split('-')[0],
     labels: (f.labels || []).join(', '),
   };
@@ -46,6 +41,7 @@ export function toIssue(raw, fields) {
     key: raw.key,
     url: `${config.baseUrl}/browse/${raw.key}`,
     project: cells.project,
+    projectName: f.project?.name || '',
     labels: f.labels || [],
     fixVersions: (f.fixVersions || []).map((v) => v.name),
     cells,
@@ -81,6 +77,7 @@ export async function loadMeta(issues) {
     }
   }
   const projects = [...new Set(issues.map((i) => i.project))].sort();
+  const projectList = projects.map((key) => ({ key, name: issues.find((i) => i.project === key)?.projectName || '' }));
   const versions = new Set();
   for (const p of projects) {
     try {
@@ -96,7 +93,7 @@ export async function loadMeta(issues) {
     columns: COLUMNS,
     options,
     projects,
-    fixVersions,
+    projectList,
     labels,
     missingFields: Object.entries(fields).filter(([, d]) => !d).map(([k]) => config.fields[k]),
   };

@@ -1,4 +1,41 @@
 import React, { useMemo, useState } from 'react';
+import { faBolt, faMoneyBill } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
+
+const HEADER_TIPS = {
+  publicNotes:
+    'Optional. Displays as a separate free-text field beneath the Release Note. Use this for stories you wish to display publicly that do not have a release note.',
+  roadmap:
+    'Does this issue belong on the public roadmap? If yes, you have about 15 other things to check beside this Yes/No field.',
+};
+
+function FaIcon({ icon, className = '', label }) {
+  const [w, h, , , path] = icon.icon;
+  return (
+    <svg className={`fa-icon ${className}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={label}>
+      <title>{label}</title>
+      <path d={path} />
+    </svg>
+  );
+}
+
+function IssueType({ type }) {
+  if (type === 'Epic') return <FaIcon icon={faBolt} className="epic" label="Epic" />;
+  if (type === 'Functional Story') return <FaIcon icon={faMoneyBill} className="story" label="Functional Story" />;
+  return type;
+}
+
+function HeaderLabel({ col }) {
+  const tip = HEADER_TIPS[col.key];
+  if (!tip) return col.label;
+  return (
+    <span className="th-tip" tabIndex={0}>
+      {col.label}
+      <FaIcon icon={faCircleQuestion} className="help" label="More info" />
+      <span className="tip-text" role="tooltip">{tip}</span>
+    </span>
+  );
+}
 
 const CRITERIA_LABELS = {
   roadmap: 'Roadmap?',
@@ -29,7 +66,7 @@ function ValueInput({ options, value, onChange, ...rest }) {
   );
 }
 
-export default function Review({ data, reload }) {
+export default function Review({ data, reload, projects = [], quick = '', onProject }) {
   const { issues, meta, baseUrl } = data;
   const editable = meta.columns.filter((c) => c.editable);
   const shown = meta.columns.filter((c) => !['project', 'labels'].includes(c.key));
@@ -85,9 +122,15 @@ export default function Review({ data, reload }) {
         <input placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} />
         <label><input type="checkbox" checked={onlyHidden} onChange={(e) => setOnlyHidden(e.target.checked)} /> Not publicly visible only</label>
         <span>{rows.length} shown · {issues.filter((i) => i.visibility.visible).length}/{issues.length} public</span>
+        <a className="btn sdsc" href="https://support.sirsidynix.com/product/roadmap" target="_blank" rel="noopener noreferrer">SDSC</a>
       </div>
-      <div className="bar">
-        <a href="https://support.sirsidynix.com/product/roadmap" target="_blank" rel="noopener noreferrer">See it in the SDSC</a>
+      <div className="bar quick">
+        <label>Project quick filter
+          <select value={quick} onChange={(e) => onProject(e.target.value)}>
+            <option value="">All projects</option>
+            {projects.map((p) => <option key={p.key} value={p.key}>{p.name ? `${p.key} – ${p.name}` : p.key}</option>)}
+          </select>
+        </label>
       </div>
       {msg && <div className={msg.ok ? 'info' : 'error'}>{msg.text}</div>}
       {sel.size > 0 && (
@@ -106,7 +149,7 @@ export default function Review({ data, reload }) {
           <tr>
             <th><input type="checkbox" checked={allSel} onChange={() => setSel(allSel ? new Set() : new Set(rows.map((r) => r.key)))} /></th>
             <th className="criteria">Criteria</th>
-            {shown.map((c) => <th key={c.key}>{c.label}</th>)}
+            {shown.map((c) => <th key={c.key}><HeaderLabel col={c} /></th>)}
           </tr>
         </thead>
         <tbody>
@@ -147,6 +190,8 @@ export default function Review({ data, reload }) {
                         onKeyDown={(e) => { if (e.key === 'Enter') saveInline(); if (e.key === 'Escape') setEdit(null); }} />
                     ) : c.key === 'key' ? (
                       <a href={`${baseUrl}/browse/${i.key}`} target="_blank" rel="noreferrer">{i.key}</a>
+                    ) : c.key === 'issueType' ? (
+                      <IssueType type={i.cells.issueType} />
                     ) : i.cells[c.key]}
                     {isEdit && <button className="primary" onClick={saveInline}>Save</button>}
                   </td>
