@@ -118,7 +118,6 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
       <div className="bar">
         <input placeholder="Search…" value={q} onChange={(e) => setQ(e.target.value)} />
         <label><input type="checkbox" checked={onlyHidden} onChange={(e) => setOnlyHidden(e.target.checked)} /> Not publicly visible only</label>
-        <span>{rows.length} shown · {issues.filter((i) => i.visibility.visible).length}/{issues.length} public</span>
         <a className="btn sdsc" href="https://support.sirsidynix.com/product/roadmap" target="_blank" rel="noopener noreferrer">SDSC</a>
       </div>
       <div className="bar quick">
@@ -129,6 +128,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
           </select>
         </label>
       </div>
+      <div className="counts">{rows.length} shown · {issues.filter((i) => i.visibility.visible).length}/{issues.length} public</div>
       {msg && <div className={msg.ok ? 'info' : 'error'}>{msg.text}</div>}
       {sel.size > 0 && (
         <div className="bar bulk">
