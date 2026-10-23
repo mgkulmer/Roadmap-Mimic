@@ -1,0 +1,34 @@
+:root { font-family: system-ui, Segoe UI, sans-serif; color: #1c2533; }
+body { margin: 0; background: #f5f7fa; }
+header.top { background: #0b3d91; color: #fff; padding: 10px 20px; display: flex; gap: 24px; align-items: center; }
+header.top h1 { font-size: 18px; margin: 0; }
+header.top button { background: none; border: 0; color: #cfe0ff; font-size: 15px; cursor: pointer; padding: 6px 4px; }
+header.top button.active { color: #fff; border-bottom: 2px solid #fff; }
+main { padding: 16px 20px; }
+.bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.bar.bulk { background: #fff8e1; border: 1px solid #f0d98a; padding: 8px 12px; border-radius: 6px; }
+input, select, textarea, button { font: inherit; padding: 5px 8px; border: 1px solid #b8c2d0; border-radius: 4px; }
+button { background: #fff; cursor: pointer; }
+button.primary { background: #0b3d91; color: #fff; border-color: #0b3d91; }
+button:disabled { opacity: .5; cursor: default; }
+table { border-collapse: collapse; width: 100%; background: #fff; font-size: 13px; }
+th, td { border-bottom: 1px solid #e1e6ee; padding: 6px 8px; text-align: left; vertical-align: top; }
+th { background: #eef2f8; position: sticky; top: 0; }
+td.editable { cursor: cell; }
+td.editable:hover { background: #f0f6ff; }
+td.notes { max-width: 280px; white-space: pre-wrap; }
+tr.sel { background: #e8f0ff; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; white-space: nowrap; }
+.pill.ok { background: #d9f5df; color: #14692a; }
+.pill.bad { background: #fde2e2; color: #9b1c1c; }
+.fail { display: block; font-size: 11px; color: #9b1c1c; margin-top: 2px; }
+.error { background: #fde2e2; color: #9b1c1c; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+.info { background: #e8f0ff; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+.grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+.panel { background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e1e6ee; display: flex; flex-direction: column; gap: 10px; }
+.panel label { font-weight: 600; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { background: #dbe6fb; border-radius: 10px; padding: 1px 4px 1px 8px; font-size: 12px; font-weight: 400; }
+.chip button { border: 0; background: none; padding: 0 4px; }
+.checks { display: flex; flex-wrap: wrap; gap: 4px 12px; font-weight: 400; }
+.checks label { font-weight: 400; flex-direction: row; align-items: center; gap: 4px; }
