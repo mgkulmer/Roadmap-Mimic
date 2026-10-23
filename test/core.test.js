@@ -4,8 +4,8 @@ import { evaluateVisibility } from '../server/visibility.js';
 import { toJiraValue } from '../server/jira.js';
 import { renderPdf } from '../server/pdf.js';
 
-const cfg = { publicSecurityLevels: ['public'], negativeValues: ['no', 'false'] };
-const good = { roadmap: 'Yes', fixVersion: '1.0', security: '', addToReleaseNote: 'Yes', releaseNote: 'Shipped' };
+const cfg = { publicSecurityLevels: ['Public-Global'], epicOnlyProjects: ['BCD'], negativeValues: ['no', 'false'] };
+const good = { roadmap: 'Yes', fixVersion: '1.0', security: 'Public-Global', addToReleaseNote: 'Yes', releaseNote: 'Shipped', project: 'XYZ', issueType: 'Functional Story' };
 
 test('fully configured issue is visible', () => {
   assert.equal(evaluateVisibility(good, cfg).visible, true);
@@ -16,8 +16,16 @@ test('reports each failing criterion', () => {
   assert.deepEqual(r.failing, ['roadmap', 'fixVersion', 'security', 'releaseNote']);
 });
 
-test('public security level passes', () => {
-  assert.equal(evaluateVisibility({ ...good, security: 'Public' }, cfg).visible, true);
+test('security level must be Public-Global', () => {
+  assert.equal(evaluateVisibility({ ...good, security: '' }, cfg).visible, false);
+  assert.equal(evaluateVisibility({ ...good, security: 'Internal' }, cfg).visible, false);
+  assert.equal(evaluateVisibility(good, cfg).visible, true);
+});
+
+test('BCD issues must be Epics', () => {
+  const story = evaluateVisibility({ ...good, project: 'BCD' }, cfg);
+  assert.deepEqual(story.failing, ['issueType']);
+  assert.equal(evaluateVisibility({ ...good, project: 'BCD', issueType: 'Epic' }, cfg).visible, true);
 });
 
 test('toJiraValue maps by schema', () => {

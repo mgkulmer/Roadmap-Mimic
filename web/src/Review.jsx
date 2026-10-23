@@ -65,6 +65,7 @@ const CRITERIA_LABELS = {
   security: 'Security Level',
   addToReleaseNote: 'Add to Release Notes',
   releaseNote: 'Release Note',
+  issueType: 'Issue Type = Epic',
 };
 
 export async function patchIssues(keys, field, value) {
@@ -202,7 +203,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
                   </span>
                 )}
                 <span className="crit-list">
-                  {Object.entries(CRITERIA_LABELS).map(([k, label]) => (
+                  {Object.entries(CRITERIA_LABELS).filter(([k]) => k in i.visibility.criteria).map(([k, label]) => (
                     <span key={k} className={`crit ${i.visibility.criteria[k] ? 'pass' : 'fail'}`}>
                       {i.visibility.criteria[k] ? '✓' : '✗'} {label}
                     </span>

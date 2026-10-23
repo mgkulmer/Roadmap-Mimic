@@ -18,11 +18,15 @@ export function evaluateVisibility(values, cfg) {
     roadmap: isPositive(values.roadmap, cfg.negativeValues),
     fixVersion: !isEmpty(values.fixVersion),
     security:
-      isEmpty(security) ||
-      cfg.publicSecurityLevels.some((l) => String(security).toLowerCase().includes(l.toLowerCase())),
+      !isEmpty(security) &&
+      cfg.publicSecurityLevels.some((l) => String(security).trim().toLowerCase() === l.toLowerCase()),
     addToReleaseNote: isPositive(values.addToReleaseNote, cfg.negativeValues),
     releaseNote: !isEmpty(values.releaseNote),
   };
+  // Some projects only publish Epics.
+  if ((cfg.epicOnlyProjects || []).some((p) => p.toLowerCase() === String(values.project || '').toLowerCase())) {
+    criteria.issueType = String(values.issueType).trim().toLowerCase() === 'epic';
+  }
   const failing = Object.keys(criteria).filter((k) => !criteria[k]);
   return { criteria, failing, visible: failing.length === 0 };
 }
