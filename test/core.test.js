@@ -22,6 +22,16 @@ test('security level must be Public-Global', () => {
   assert.equal(evaluateVisibility(good, cfg).visible, true);
 });
 
+test('fix version must be a roadmap bucket or a release number', () => {
+  const fv = (v) => evaluateVisibility({ ...good, fixVersion: v }, cfg2).criteria.fixVersion;
+  const cfg2 = { ...cfg, fixVersionNames: ['Up Next', 'Current Development'] };
+  assert.equal(fv(''), false);
+  assert.equal(fv('Backlog'), false);
+  assert.equal(fv('up next'), true);
+  assert.equal(fv('Backlog, Current Development'), true);
+  assert.equal(fv('26.04.00'), true);
+});
+
 test('BCD issues must be Epics', () => {
   const story = evaluateVisibility({ ...good, project: 'BCD' }, cfg);
   assert.deepEqual(story.failing, ['issueType']);
