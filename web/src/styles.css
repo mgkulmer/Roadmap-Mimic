@@ -31,6 +31,7 @@ tr.sel { background: #e8f0ff; }
 th.criteria, td.criteria { width: 1%; white-space: nowrap; text-align: center; }
 td.criteria .overall { display: flex; justify-content: center; margin-bottom: 8px; font-weight: 600; }
 .status-icon { width: 26px; height: 26px; fill: #14892f; }
+.status-icon.bad { fill: #c62828; }
 .crit-list { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
 .crit { padding: 3px 10px; border-radius: 12px; font-size: 12px; white-space: nowrap; border: 1px solid transparent; }
 .crit.pass { background: #d9f5df; color: #14692a; border-color: #a8e0b4; }
