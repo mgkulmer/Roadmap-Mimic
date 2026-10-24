@@ -50,8 +50,10 @@ export function toIssue(raw, fields) {
 
 export async function loadIssues(extraJql = '', overrideJql = '') {
   const fields = await getResolvedFields();
-  const base = stripOrderBy(overrideJql.trim() || (await getBaseJql()));
-  const jql = `(${base || 'project is not EMPTY'})${extraJql ? ' AND ' + extraJql : ''} ORDER BY key ASC`;
+  const src = overrideJql.trim() || (await getBaseJql());
+  const base = stripOrderBy(src);
+  const order = /\border\s+by\b[\s\S]*$/i.exec(overrideJql.trim() ? src : '')?.[0] || 'ORDER BY key ASC';
+  const jql = `(${base || 'project is not EMPTY'})${extraJql ? ' AND ' + extraJql : ''} ${order}`;
   const ids = [
     'summary', 'status', 'issuetype', 'parent', 'project', 'labels', 'fixVersions',
     ...Object.values(fields).filter(Boolean).map((d) => d.id),

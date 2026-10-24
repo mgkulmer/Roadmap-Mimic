@@ -97,7 +97,7 @@ function ValueInput({ options, value, onChange, ...rest }) {
   );
 }
 
-export default function Review({ data, reload, projects = [], quick = '', onProject }) {
+export default function Review({ data, reload, projects = [], quick = '', onProject, onFind }) {
   const { issues, meta, baseUrl } = data;
   const editable = meta.columns.filter((c) => c.editable);
   const shown = meta.columns.filter((c) => !['project', 'labels'].includes(c.key));
@@ -168,7 +168,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
             {projects.map((p) => <option key={p.key} value={p.key}>{p.name ? `${p.key} – ${p.name}` : p.key}</option>)}
           </select>
           {quick === 'BCD' && (
-            <span className="quick-note">BCD Roadmap issues must be Epics. If the current details on the roadmap don't look right to you, find Epics that have children in the current sprint and make those visible.</span>
+            <span className="quick-note">BCD Roadmap issues must be Epics. If the current details on the roadmap don't look right to you, find Epics that have children in the current sprint and make those visible. <a href="#" className="find-link" onClick={(e) => { e.preventDefault(); onFind(); }}>FIND THOSE</a></span>
           )}
         </label>
       </div>

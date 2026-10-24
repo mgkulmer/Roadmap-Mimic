@@ -39,6 +39,13 @@ export default function App() {
     load(draft.trim() === original.trim() ? '' : draft, '');
   };
 
+  const findEpics = () => {
+    const jql = 'project in (BCD, SEARCH) AND issuetype = Epic AND issueFunction in epicsOf("sprint in openSprints()") ORDER BY project ASC, key ASC';
+    setQuick('');
+    setDraft(jql);
+    load(jql, '');
+  };
+
   const selectProject = (p) => {
     if (!p) {
       setQuick('');
@@ -90,7 +97,7 @@ export default function App() {
           <div className="error">Jira fields not found: {data.meta.missingFields.join(', ')}. Set FIELD_* in .env.</div>
         )}
         {!data && loading && <div className="info">Loading issues from Jira…</div>}
-        {data && tab === 'review' && <Review data={data} reload={() => load()} projects={projectOpts} quick={quick} onProject={selectProject} />}
+        {data && tab === 'review' && <Review data={data} reload={() => load()} projects={projectOpts} quick={quick} onProject={selectProject} onFind={findEpics} />}
         {data && tab === 'report' && <Report meta={data.meta} baseJql={applied} />}
       </main>
     </>
