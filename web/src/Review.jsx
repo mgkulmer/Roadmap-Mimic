@@ -167,6 +167,9 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
             <option value="">All projects</option>
             {projects.map((p) => <option key={p.key} value={p.key}>{p.name ? `${p.key} – ${p.name}` : p.key}</option>)}
           </select>
+          {quick === 'BCD' && (
+            <span className="quick-note">BCD Roadmap issues must be Epics. If the current details on the roadmap don't look right to you, find Epics that have children in the current sprint and make those visible.</span>
+          )}
         </label>
       </div>
       <div className="counts">{rows.length} shown · {issues.filter((i) => i.visibility.visible).length}/{issues.length} public</div>
