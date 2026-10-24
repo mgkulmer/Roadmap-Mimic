@@ -32,6 +32,13 @@ test('fix version must be a roadmap bucket or a release number', () => {
   assert.equal(fv('26.04.00'), true);
 });
 
+test('Public Notes can replace the release note', () => {
+  const base = { ...good, addToReleaseNote: '', releaseNote: '' };
+  assert.deepEqual(evaluateVisibility(base, cfg).failing, ['addToReleaseNote', 'releaseNote']);
+  assert.equal(evaluateVisibility({ ...base, publicNotes: 'Shown publicly' }, cfg).visible, true);
+  assert.equal(evaluateVisibility({ ...good, publicNotes: '' }, cfg).visible, true);
+});
+
 test('BCD issues must be Epics', () => {
   const story = evaluateVisibility({ ...good, project: 'BCD' }, cfg);
   assert.deepEqual(story.failing, ['issueType']);

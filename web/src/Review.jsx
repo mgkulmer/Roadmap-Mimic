@@ -64,7 +64,7 @@ const CRITERIA_LABELS = {
   fixVersion: 'Fix Version',
   security: 'Security Level',
   addToReleaseNote: 'Add to Release Notes',
-  releaseNote: 'Release Note',
+  releaseNote: 'Release Note or Public Notes',
   issueType: 'Issue Type = Epic',
 };
 
