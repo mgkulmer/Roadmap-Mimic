@@ -78,3 +78,7 @@ td.criteria .overall { display: flex; justify-content: center; margin-bottom: 8p
 .seg button:first-child { border-radius: 4px 0 0 4px; }
 .seg button:last-child { border-radius: 0 4px 4px 0; margin-left: -1px; }
 .seg button.on { background: #8c1a6a; color: #fff; border-color: #8c1a6a; }
+
+.fa-icon.warn { fill: #f5b800; width: 18px; height: 18px; }
+.cell-tip .tip-text { top: auto; bottom: 100%; margin: 0 0 6px; left: auto; right: -8px; width: 240px; }
+.cell-tip { cursor: help; }

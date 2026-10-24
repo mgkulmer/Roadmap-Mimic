@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { faSkull } from '@fortawesome/free-solid-svg-icons';
+import { faSkull, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
 
 const HEADER_TIPS = {
@@ -20,6 +20,15 @@ function FaIcon({ icon, className = '', label }) {
 }
 
 const SKULL_WHEN_EMPTY = ['roadmap', 'security'];
+
+function ReleaseNoteFallback() {
+  return (
+    <span className="th-tip cell-tip" tabIndex={0}>
+      <FaIcon icon={faCircleExclamation} className="warn" label="Public Note missing" />
+      <span className="tip-text" role="tooltip">If a Public Note is not present, the Release Note will be used.</span>
+    </span>
+  );
+}
 const WRAPPING = ['summary', 'releaseNote', 'publicNotes'];
 
 const FILTERABLE = ['status', 'issueType'];
@@ -63,7 +72,6 @@ const CRITERIA_LABELS = {
   roadmap: 'Roadmap?',
   fixVersion: 'Fix Version',
   security: 'Security Level',
-  addToReleaseNote: 'Add to Release Notes',
   releaseNote: 'Release Note or Public Notes',
   issueType: 'Issue Type = Epic',
 };
@@ -222,6 +230,8 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
                         onKeyDown={(e) => { if (e.key === 'Enter') saveInline(); if (e.key === 'Escape') setEdit(null); }} />
                     ) : c.key === 'key' ? (
                       <a href={`${baseUrl}/browse/${i.key}`} target="_blank" rel="noreferrer">{i.key}</a>
+                    ) : c.key === 'publicNotes' && !i.cells.publicNotes ? (
+                      <ReleaseNoteFallback />
                     ) : SKULL_WHEN_EMPTY.includes(c.key) && !i.cells[c.key] ? (
                       <FaIcon icon={faSkull} className="empty" label="Empty" />
                     ) : i.cells[c.key]}

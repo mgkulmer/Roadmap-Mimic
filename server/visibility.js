@@ -20,7 +20,7 @@ const hasPublicFixVersion = (v, cfg) => {
 
 /**
  * Evaluate the public-visibility criteria for an issue.
- * `values` maps a criterion key (roadmap, fixVersion, security, addToReleaseNote, releaseNote)
+ * `values` maps a criterion key (roadmap, fixVersion, security, releaseNote)
  * to its display string.
  */
 export function evaluateVisibility(values, cfg) {
@@ -31,8 +31,6 @@ export function evaluateVisibility(values, cfg) {
     security:
       !isEmpty(security) &&
       cfg.publicSecurityLevels.some((l) => String(security).trim().toLowerCase() === l.toLowerCase()),
-    // Add to Release Notes only applies to the Release Note path; Public Notes alone is enough.
-    addToReleaseNote: !isEmpty(values.publicNotes) || isPositive(values.addToReleaseNote, cfg.negativeValues),
     releaseNote: !isEmpty(values.releaseNote) || !isEmpty(values.publicNotes),
   };
   // Some projects only publish Epics.

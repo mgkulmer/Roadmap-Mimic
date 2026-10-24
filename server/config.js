@@ -14,7 +14,6 @@ export const config = {
     roadmap: process.env.FIELD_ROADMAP || 'Roadmap?',
     fixVersion: process.env.FIELD_FIX_VERSION || 'Fix Version',
     security: process.env.FIELD_SECURITY || 'Security Level',
-    addToReleaseNote: process.env.FIELD_ADD_TO_RELEASE_NOTE || 'Add to Release Notes',
     releaseNote: process.env.FIELD_RELEASE_NOTE || 'Release Note',
     publicNotes: process.env.FIELD_PUBLIC_NOTES || 'Public Notes',
   },

@@ -5,7 +5,7 @@ import { toJiraValue } from '../server/jira.js';
 import { renderPdf } from '../server/pdf.js';
 
 const cfg = { publicSecurityLevels: ['Public-Global'], epicOnlyProjects: ['BCD'], negativeValues: ['no', 'false'] };
-const good = { roadmap: 'Yes', fixVersion: '1.0', security: 'Public-Global', addToReleaseNote: 'Yes', releaseNote: 'Shipped', project: 'XYZ', issueType: 'Functional Story' };
+const good = { roadmap: 'Yes', fixVersion: '1.0', security: 'Public-Global', releaseNote: 'Shipped', project: 'XYZ', issueType: 'Functional Story' };
 
 test('fully configured issue is visible', () => {
   assert.equal(evaluateVisibility(good, cfg).visible, true);
@@ -33,8 +33,8 @@ test('fix version must be a roadmap bucket or a release number', () => {
 });
 
 test('Public Notes can replace the release note', () => {
-  const base = { ...good, addToReleaseNote: '', releaseNote: '' };
-  assert.deepEqual(evaluateVisibility(base, cfg).failing, ['addToReleaseNote', 'releaseNote']);
+  const base = { ...good, releaseNote: '' };
+  assert.deepEqual(evaluateVisibility(base, cfg).failing, ['releaseNote']);
   assert.equal(evaluateVisibility({ ...base, publicNotes: 'Shown publicly' }, cfg).visible, true);
   assert.equal(evaluateVisibility({ ...good, publicNotes: '' }, cfg).visible, true);
 });
