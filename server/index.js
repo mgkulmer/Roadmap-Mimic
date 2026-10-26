@@ -17,16 +17,16 @@ const jqlList = (vals) => vals.map((v) => `"${String(v).replace(/"/g, '\\"')}"`)
 
 // Epic keys that are parents of issues in open sprints; returns the follow-up JQL.
 app.get('/api/sprint-epics', wrap(async (_req, res) => {
-  const sprintJql = 'sprint in openSprints() AND parent is not EMPTY';
+  const sprintJql = 'project in (BCD, SEARCH) AND sprint in openSprints() AND parent is not EMPTY';
   const found = await searchAll(sprintJql, ['parent', 'project']);
   const keys = new Set();
   for (const i of found) {
     const p = i.fields?.parent;
-    if (p?.fields?.issuetype?.name === 'Epic') keys.add(p.key);
+    if (p?.fields?.issuetype?.name === 'Epic' && /^(BCD|SEARCH)-/.test(p.key)) keys.add(p.key);
   }
   const list = [...keys].sort();
   const jql = list.length
-    ? `issuekey in (${list.join(', ')}) ORDER BY project ASC, key ASC`
+    ? `project in (BCD, SEARCH) AND issuekey in (${list.join(', ')}) ORDER BY project ASC, key ASC`
     : '';
   res.json({ sprintJql, scanned: found.length, keys: list, jql });
 }));
