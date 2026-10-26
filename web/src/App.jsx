@@ -64,7 +64,9 @@ export default function App() {
   return (
     <>
       <header className="top">
-        <img className="logo" src="/mimic.png" alt="" />
+        <button type="button" className="logo-btn" title="Reset" aria-label="Reset Roadmap Mimic" onClick={() => window.location.assign('/')}>
+          <img className="logo" src="/mimic.png" alt="" />
+        </button>
         <h1>Roadmap Mimic</h1>
         <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>Review &amp; edit</button>
         <button className={tab === 'report' ? 'active' : ''} onClick={() => setTab('report')}>PDF report</button>

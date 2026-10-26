@@ -2,6 +2,7 @@
 body { margin: 0; background: #f5f7fa; }
 header.top { background: #3b0f33; color: #fff; height: 72px; padding: 0 20px; display: flex; gap: 20px; align-items: center; box-sizing: border-box; border-bottom: 3px solid #f5b800; }
 header.top img.logo { height: 100%; width: auto; display: block; }
+header.top button.logo-btn { height: 100%; padding: 0; display: block; cursor: pointer; }
 header.top h1 { font-family: Creepster, 'Segoe Script', cursive; font-weight: 400; font-size: 38px; letter-spacing: .06em; margin: 0 16px 0 0; color: #f5b800; text-shadow: 2px 2px 0 #b3125f; }
 header.top button { background: none; border: 0; color: #f3c9e3; font-size: 15px; cursor: pointer; padding: 6px 4px; }
 header.top button.active { color: #f5b800; border-bottom: 2px solid #f5b800; }
