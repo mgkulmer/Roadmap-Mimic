@@ -39,11 +39,25 @@ export default function App() {
     load(draft.trim() === original.trim() ? '' : draft, '');
   };
 
-  const findEpics = () => {
-    const jql = 'project in (BCD, SEARCH) AND issuetype = Epic AND issueFunction in epicsOf("sprint in openSprints()") ORDER BY project ASC, key ASC';
+  const findEpics = async () => {
     setQuick('');
-    setDraft(jql);
-    load(jql, '');
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/sprint-epics');
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || res.statusText);
+      if (!body.jql) {
+        setLoading(false);
+        setError(`No Epics found as parents of ${body.scanned} issue(s) in open sprints.`);
+        return;
+      }
+      setDraft(body.jql);
+      await load(body.jql, '');
+    } catch (e) {
+      setError(e.message);
+      setLoading(false);
+    }
   };
 
   const selectProject = (p) => {

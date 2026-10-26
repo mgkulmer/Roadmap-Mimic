@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { loadIssues, loadMeta, getResolvedFields, COLUMNS } from './issues.js';
-import { toJiraValue, updateIssue, getFilter } from './jira.js';
+import { toJiraValue, updateIssue, getFilter, searchAll } from './jira.js';
 import { renderPdf } from './pdf.js';
 
 const app = express();
@@ -14,6 +14,22 @@ const wrap = (fn) => (req, res) =>
   fn(req, res).catch((e) => res.status(e.status && e.status < 600 ? e.status : 500).json({ error: e.message }));
 
 const jqlList = (vals) => vals.map((v) => `"${String(v).replace(/"/g, '\\"')}"`).join(', ');
+
+// Epic keys that are parents of issues in open sprints; returns the follow-up JQL.
+app.get('/api/sprint-epics', wrap(async (_req, res) => {
+  const sprintJql = 'sprint in openSprints() AND parent is not EMPTY';
+  const found = await searchAll(sprintJql, ['parent', 'project']);
+  const keys = new Set();
+  for (const i of found) {
+    const p = i.fields?.parent;
+    if (p?.fields?.issuetype?.name === 'Epic') keys.add(p.key);
+  }
+  const list = [...keys].sort();
+  const jql = list.length
+    ? `issuekey in (${list.join(', ')}) ORDER BY project ASC, key ASC`
+    : '';
+  res.json({ sprintJql, scanned: found.length, keys: list, jql });
+}));
 
 app.get('/api/issues', wrap(async (req, res) => {
   const filter = await getFilter();
