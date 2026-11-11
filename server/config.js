@@ -16,7 +16,6 @@ export const config = {
     security: process.env.FIELD_SECURITY || 'Security Level',
     releaseNote: process.env.FIELD_RELEASE_NOTE || 'Release Note',
     publicNotes: process.env.FIELD_PUBLIC_NOTES || 'Public Notes',
-    addToReleaseNotes: process.env.FIELD_ADD_TO_RELEASE_NOTES || 'Add to Release Notes',
   },
   // Public-site allow-lists (empty = not enforced). Types may be "Type" or "PROJECT:Type".
   allowedProjects: list(process.env.ALLOWED_PROJECTS, []),

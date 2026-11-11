@@ -15,7 +15,7 @@ const typeAllowed = (type, project, list = []) =>
 /**
  * Mirrors the public website's check order, stopping at the first failure:
  * project allowed -> issue type allowed -> security level public, then the
- * Roadmap? and Add to Release Notes checkboxes must be Yes.
+ * Roadmap? checkbox must be Yes and a Fix Version must be allowed.
  * (The issue exists, since it came from Jira. The Drupal node check can't be evaluated here.)
  * Only the criteria evaluated so far appear in `criteria`.
  */
@@ -26,7 +26,6 @@ export function evaluateVisibility(values, cfg) {
     ['security', () => !isEmpty(values.security) && (cfg.publicSecurityLevels || []).some((l) => eq(values.security, l))],
     ['roadmap', () => eq(values.roadmap, 'yes')],
     ['fixVersion', () => String(values.fixVersion ?? '').split(',').some((v) => (cfg.allowedFixVersions || []).some((a) => eq(a, v)))],
-    ['releaseNotes', () => eq(values.addToReleaseNotes, 'yes')],
   ];
   const criteria = {};
   const failing = [];

@@ -73,7 +73,6 @@ const CRITERIA_LABELS = {
   security: 'Public-Global',
   roadmap: 'Roadmap Yes',
   fixVersion: 'Valid Fix Version',
-  releaseNotes: 'Release Notes Yes',
 };
 
 export async function patchIssues(keys, field, value) {
