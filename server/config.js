@@ -17,13 +17,9 @@ export const config = {
     releaseNote: process.env.FIELD_RELEASE_NOTE || 'Release Note',
     publicNotes: process.env.FIELD_PUBLIC_NOTES || 'Public Notes',
   },
-  // Fix Versions that qualify as public roadmap buckets; a numeric release (e.g. 26.04.00) also qualifies.
-  fixVersionNames: list(process.env.FIX_VERSION_NAMES, ['Up Next', 'Current Development', 'Following Release', 'Future Consideration', 'General availability']),
-  fixVersionReleasePattern: process.env.FIX_VERSION_RELEASE_PATTERN || '^\\d+(\\.\\d+)+$',
+  // Public-site allow-lists (empty = not enforced). Types may be "Type" or "PROJECT:Type".
+  allowedProjects: list(process.env.ALLOWED_PROJECTS, []),
+  allowedIssueTypes: list(process.env.ALLOWED_ISSUE_TYPES, []),
   // Security levels (case-insensitive exact match) considered public. An unset level is NOT public.
   publicSecurityLevels: list(process.env.PUBLIC_SECURITY_LEVELS, ['Public-Global']),
-  // Projects whose issues must be Epics to be public.
-  epicOnlyProjects: list(process.env.EPIC_ONLY_PROJECTS, ['BCD']),
-  // Values treated as "not set/false" for select/checkbox criteria.
-  negativeValues: list(process.env.NEGATIVE_VALUES, ['no', 'false', 'none', 'n/a']),
 };

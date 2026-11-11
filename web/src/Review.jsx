@@ -69,11 +69,9 @@ function HeaderLabel({ col }) {
 }
 
 const CRITERIA_LABELS = {
-  roadmap: 'Roadmap?',
-  fixVersion: 'Fix Version',
-  security: 'Security Level',
-  releaseNote: 'Release Note or Public Notes',
-  issueType: 'Issue Type = Epic',
+  project: 'Project allowed',
+  issueType: 'Issue Type allowed',
+  security: 'Security Level public',
 };
 
 export async function patchIssues(keys, field, value) {
