@@ -6,7 +6,9 @@ header.top button.logo-btn { height: 100%; padding: 0; display: block; cursor: p
 header.top h1 { font-family: Creepster, 'Segoe Script', cursive; font-weight: 400; font-size: 38px; letter-spacing: .06em; margin: 0 16px 0 0; color: #f5b800; text-shadow: 2px 2px 0 #b3125f; }
 header.top button { background: none; border: 0; color: #f3c9e3; font-size: 15px; cursor: pointer; padding: 6px 4px; }
 header.top button.active { color: #f5b800; border-bottom: 2px solid #f5b800; }
-td.center { text-align: center; }
+td.center, th.center { text-align: center; }
+header.top a.help-link { margin-left: auto; display: flex; }
+header.top a.help-link .fa-icon { width: 24px; height: 24px; fill: #f5b800; }
 main { padding: 16px 20px; }
 .filterbar { background: #fff; border-bottom: 3px solid #b3125f; padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; }
 .filtertitle { display: flex; align-items: center; gap: 12px; font-size: 20px; }

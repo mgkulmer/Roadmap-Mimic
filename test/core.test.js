@@ -5,12 +5,12 @@ import { toJiraValue } from '../server/jira.js';
 import { renderPdf } from '../server/pdf.js';
 
 const cfg = { allowedProjects: ['BCD', 'SEARCH'], allowedIssueTypes: ['BCD:Epic', 'Functional Story'], publicSecurityLevels: ['Public-Global'] };
-const good = { security: 'Public-Global', project: 'SEARCH', issueType: 'Functional Story' };
+const good = { security: 'Public-Global', project: 'SEARCH', issueType: 'Functional Story', roadmap: 'Yes', addToReleaseNotes: 'Yes' };
 
 test('fully configured issue is visible', () => {
   const r = evaluateVisibility(good, cfg);
   assert.equal(r.visible, true);
-  assert.deepEqual(Object.keys(r.criteria), ['project', 'issueType', 'security']);
+  assert.deepEqual(Object.keys(r.criteria), ['project', 'issueType', 'security', 'roadmap', 'releaseNotes']);
 });
 
 test('stops at the first failing check', () => {
@@ -25,6 +25,11 @@ test('security level must be Public-Global', () => {
   assert.equal(evaluateVisibility({ ...good, security: '' }, cfg).visible, false);
   assert.equal(evaluateVisibility({ ...good, security: 'Internal' }, cfg).visible, false);
   assert.equal(evaluateVisibility(good, cfg).visible, true);
+});
+
+test('Roadmap and Release Notes checkboxes must be Yes', () => {
+  assert.deepEqual(evaluateVisibility({ ...good, roadmap: 'No' }, cfg).failing, ['roadmap']);
+  assert.deepEqual(evaluateVisibility({ ...good, addToReleaseNotes: '' }, cfg).failing, ['releaseNotes']);
 });
 
 test('issue type map can be per project', () => {

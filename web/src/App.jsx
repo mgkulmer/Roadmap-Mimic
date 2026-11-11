@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Review from './Review.jsx';
+import Review, { FaIcon } from './Review.jsx';
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
 import Report from './Report.jsx';
 
 export default function App() {
@@ -39,27 +40,6 @@ export default function App() {
     load(draft.trim() === original.trim() ? '' : draft, '');
   };
 
-  const findEpics = async () => {
-    setQuick('');
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch('/api/sprint-epics');
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || res.statusText);
-      if (!body.jql) {
-        setLoading(false);
-        setError(`No Epics found as parents of ${body.scanned} issue(s) in open sprints.`);
-        return;
-      }
-      setDraft(body.jql);
-      await load(body.jql, '');
-    } catch (e) {
-      setError(e.message);
-      setLoading(false);
-    }
-  };
-
   const selectProject = (p) => {
     if (!p) {
       setQuick('');
@@ -85,11 +65,14 @@ export default function App() {
         <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>Review &amp; edit</button>
         <button className={tab === 'report' ? 'active' : ''} onClick={() => setTab('report')}>PDF report</button>
         <button onClick={() => load()} disabled={loading}>{loading ? 'Loading…' : '↻ Refresh'}</button>
+        <a className="help-link" href="/api/help" target="_blank" rel="noopener noreferrer" title="Help: .env contents" aria-label="Help">
+          <FaIcon icon={faCircleQuestion} label="Help" />
+        </a>
       </header>
       {data && (
         <section className="filterbar">
           <div className="filtertitle">
-            <span className="label">Jira filter</span>
+            <span className="label">Default Jira filter</span>
             <strong>{data.filter.name}</strong>
             {modified && <span className="pill bad">JQL modified (this session only)</span>}
           </div>
@@ -100,10 +83,10 @@ export default function App() {
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.ctrlKey || e.metaKey) && run()}
           />
+          <span className="hint"><em>Edits are temporary and never change the saved Jira filter.</em></span>
           <div className="bar">
             <button className="primary" disabled={loading || !draft.trim()} onClick={run}>Run</button>
             <button disabled={loading || draft === original} onClick={() => { setDraft(original); setQuick(''); load('', ''); }}>Reset Filter</button>
-            <span className="hint"><em>Edits are temporary and never change the saved Jira filter.</em></span>
           </div>
         </section>
       )}
@@ -113,7 +96,7 @@ export default function App() {
           <div className="error">Jira fields not found: {data.meta.missingFields.join(', ')}. Set FIELD_* in .env.</div>
         )}
         {!data && loading && <div className="info">Loading issues from Jira…</div>}
-        {data && tab === 'review' && <Review data={data} reload={() => load()} projects={projectOpts} quick={quick} onProject={selectProject} onFind={findEpics} />}
+        {data && tab === 'review' && <Review data={data} reload={() => load()} projects={projectOpts} quick={quick} onProject={selectProject} />}
         {data && tab === 'report' && <Report meta={data.meta} baseJql={applied} />}
       </main>
     </>

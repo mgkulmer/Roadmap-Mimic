@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { loadIssues, loadMeta, getResolvedFields, COLUMNS } from './issues.js';
-import { toJiraValue, updateIssue, getFilter, searchAll } from './jira.js';
+import { toJiraValue, updateIssue, getFilter } from './jira.js';
 import { renderPdf } from './pdf.js';
 
 const app = express();
@@ -15,21 +15,17 @@ const wrap = (fn) => (req, res) =>
 
 const jqlList = (vals) => vals.map((v) => `"${String(v).replace(/"/g, '\\"')}"`).join(', ');
 
-// Epic keys that are parents of issues in open sprints; returns the follow-up JQL.
-app.get('/api/sprint-epics', wrap(async (_req, res) => {
-  const sprintJql = 'project in (BCD, SEARCH) AND sprint in openSprints() AND parent is not EMPTY';
-  const found = await searchAll(sprintJql, ['parent', 'project']);
-  const keys = new Set();
-  for (const i of found) {
-    const p = i.fields?.parent;
-    if (p?.fields?.issuetype?.name === 'Epic' && /^(BCD|SEARCH)-/.test(p.key)) keys.add(p.key);
-  }
-  const list = [...keys].sort();
-  const jql = list.length
-    ? `project in (BCD, SEARCH) AND issuekey in (${list.join(', ')}) ORDER BY project ASC, key ASC`
-    : '';
-  res.json({ sprintJql, scanned: found.length, keys: list, jql });
-}));
+const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// Help page: shows the .env contents with secret values masked.
+app.get('/api/help', (_req, res) => {
+  const file = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '.env');
+  const raw = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '(no .env file found)';
+  const masked = raw.replace(/^(\s*[A-Z0-9_]*(?:TOKEN|SECRET|PASSWORD)[A-Z0-9_]*\s*=).+$/gim, '$1********');
+  res.type('html').send(`<!doctype html><html><head><meta charset="utf-8"><title>Roadmap Mimic – Help</title>
+<style>body{font-family:system-ui,sans-serif;margin:24px;color:#222}h1{color:#3b0f33}pre{background:#f6f1f5;border:1px solid #d9c3d3;border-radius:6px;padding:14px;white-space:pre-wrap;word-break:break-word}</style></head>
+<body><h1>Roadmap Mimic – .env</h1><p>Current contents of the <code>.env</code> file (API token masked).</p><pre>${escapeHtml(masked)}</pre></body></html>`);
+});
 
 app.get('/api/issues', wrap(async (req, res) => {
   const filter = await getFilter();

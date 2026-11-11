@@ -5,11 +5,9 @@ import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
 const HEADER_TIPS = {
   publicNotes:
     'Optional. Displays as a separate free-text field beneath the Release Note. Use this for stories you wish to display publicly that do not have a release note.',
-  roadmap:
-    'Does this issue belong on the public roadmap? If yes, you have about 15 other things to check beside this Yes/No field.',
 };
 
-function FaIcon({ icon, className = '', label }) {
+export function FaIcon({ icon, className = '', label }) {
   const [w, h, , , path] = icon.icon;
   return (
     <svg className={`fa-icon ${className}`} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={label}>
@@ -20,6 +18,7 @@ function FaIcon({ icon, className = '', label }) {
 }
 
 const SKULL_WHEN_EMPTY = ['roadmap', 'security'];
+const CENTERED = ['roadmap', 'security'];
 
 function ReleaseNoteFallback() {
   return (
@@ -69,9 +68,11 @@ function HeaderLabel({ col }) {
 }
 
 const CRITERIA_LABELS = {
-  project: 'Project allowed',
-  issueType: 'Issue Type allowed',
-  security: 'Security Level public',
+  project: 'Valid Jira project',
+  issueType: 'Valid issue type',
+  security: 'Public-Global',
+  roadmap: 'Roadmap Yes',
+  releaseNotes: 'Release Notes Yes',
 };
 
 export async function patchIssues(keys, field, value) {
@@ -95,7 +96,7 @@ function ValueInput({ options, value, onChange, ...rest }) {
   );
 }
 
-export default function Review({ data, reload, projects = [], quick = '', onProject, onFind }) {
+export default function Review({ data, reload, projects = [], quick = '', onProject }) {
   const { issues, meta, baseUrl } = data;
   const editable = meta.columns.filter((c) => c.editable);
   const shown = meta.columns.filter((c) => !['project', 'labels'].includes(c.key));
@@ -165,9 +166,6 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
             <option value="">All projects</option>
             {projects.map((p) => <option key={p.key} value={p.key}>{p.name ? `${p.key} – ${p.name}` : p.key}</option>)}
           </select>
-          {quick === 'BCD' && (
-            <span className="quick-note">BCD Roadmap issues must be Epics. If the current details on the roadmap don't look right to you, find Epics that have children in the current sprint and make those visible. <a href="#" className="find-link" onClick={(e) => { e.preventDefault(); onFind(); }}>FIND THOSE</a></span>
-          )}
         </label>
       </div>
       <div className="counts">{rows.length} shown · {issues.filter((i) => i.visibility.visible).length}/{issues.length} public</div>
@@ -188,7 +186,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
           <tr>
             <th><input type="checkbox" checked={allSel} onChange={() => setSel(allSel ? new Set() : new Set(rows.map((r) => r.key)))} /></th>
             <th className="criteria">Criteria</th>
-            {shown.map((c) => <th key={c.key}>{FILTERABLE.includes(c.key)
+            {shown.map((c) => <th key={c.key} className={CENTERED.includes(c.key) ? 'center' : ''}>{FILTERABLE.includes(c.key)
               ? <ColumnFilter col={c} values={filterValues[c.key]} selected={filters[c.key] || new Set()} onChange={(v) => setFilters({ ...filters, [c.key]: v })} />
               : <HeaderLabel col={c} />}</th>)}
           </tr>
@@ -221,7 +219,7 @@ export default function Review({ data, reload, projects = [], quick = '', onProj
               </td>
               {shown.map((c) => {
                 const isEdit = edit && edit.key === i.key && edit.field === c.key;
-                const cls = [c.editable ? 'editable' : '', /note/i.test(c.key) ? 'notes' : '', WRAPPING.includes(c.key) ? 'wrap' : 'fit', SKULL_WHEN_EMPTY.includes(c.key) && !i.cells[c.key] ? 'center' : ''].join(' ');
+                const cls = [c.editable ? 'editable' : '', /note/i.test(c.key) ? 'notes' : '', WRAPPING.includes(c.key) ? 'wrap' : 'fit', CENTERED.includes(c.key) ? 'center' : ''].join(' ');
                 return (
                   <td key={c.key} className={cls} title={c.editable ? 'Double-click to edit' : undefined}
                       onDoubleClick={() => c.editable && !busy && setEdit({ key: i.key, field: c.key, value: i.cells[c.key] })}>
