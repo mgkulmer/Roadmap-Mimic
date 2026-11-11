@@ -72,6 +72,7 @@ const CRITERIA_LABELS = {
   issueType: 'Valid issue type',
   security: 'Public-Global',
   roadmap: 'Roadmap Yes',
+  fixVersion: 'Valid Fix Version',
   releaseNotes: 'Release Notes Yes',
 };
 

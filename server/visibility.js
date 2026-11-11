@@ -25,6 +25,7 @@ export function evaluateVisibility(values, cfg) {
     ['issueType', () => typeAllowed(values.issueType, values.project, cfg.allowedIssueTypes)],
     ['security', () => !isEmpty(values.security) && (cfg.publicSecurityLevels || []).some((l) => eq(values.security, l))],
     ['roadmap', () => eq(values.roadmap, 'yes')],
+    ['fixVersion', () => String(values.fixVersion ?? '').split(',').some((v) => (cfg.allowedFixVersions || []).some((a) => eq(a, v)))],
     ['releaseNotes', () => eq(values.addToReleaseNotes, 'yes')],
   ];
   const criteria = {};

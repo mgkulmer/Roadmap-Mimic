@@ -4,13 +4,13 @@ import { evaluateVisibility } from '../server/visibility.js';
 import { toJiraValue } from '../server/jira.js';
 import { renderPdf } from '../server/pdf.js';
 
-const cfg = { allowedProjects: ['BCD', 'SEARCH'], allowedIssueTypes: ['BCD:Epic', 'Functional Story'], publicSecurityLevels: ['Public-Global'] };
-const good = { security: 'Public-Global', project: 'SEARCH', issueType: 'Functional Story', roadmap: 'Yes', addToReleaseNotes: 'Yes' };
+const cfg = { allowedProjects: ['BCD', 'SEARCH'], allowedIssueTypes: ['BCD:Epic', 'Functional Story'], publicSecurityLevels: ['Public-Global'], allowedFixVersions: ['Up Next', 'Current Development'] };
+const good = { security: 'Public-Global', project: 'SEARCH', issueType: 'Functional Story', roadmap: 'Yes', fixVersion: 'Up Next', addToReleaseNotes: 'Yes' };
 
 test('fully configured issue is visible', () => {
   const r = evaluateVisibility(good, cfg);
   assert.equal(r.visible, true);
-  assert.deepEqual(Object.keys(r.criteria), ['project', 'issueType', 'security', 'roadmap', 'releaseNotes']);
+  assert.deepEqual(Object.keys(r.criteria), ['project', 'issueType', 'security', 'roadmap', 'fixVersion', 'releaseNotes']);
 });
 
 test('stops at the first failing check', () => {
@@ -32,6 +32,12 @@ test('Roadmap and Release Notes checkboxes must be Yes', () => {
   assert.deepEqual(evaluateVisibility({ ...good, addToReleaseNotes: '' }, cfg).failing, ['releaseNotes']);
 });
 
+test('Fix Version must be one of the allowed versions', () => {
+  assert.deepEqual(evaluateVisibility({ ...good, fixVersion: '' }, cfg).failing, ['fixVersion']);
+  assert.deepEqual(evaluateVisibility({ ...good, fixVersion: '1.0' }, cfg).failing, ['fixVersion']);
+  assert.equal(evaluateVisibility({ ...good, fixVersion: '1.0, current development' }, cfg).visible, true);
+});
+
 test('issue type map can be per project', () => {
   assert.equal(evaluateVisibility({ ...good, project: 'BCD' }, cfg).visible, true);
   const strict = { ...cfg, allowedIssueTypes: ['BCD:Epic'] };
@@ -40,7 +46,7 @@ test('issue type map can be per project', () => {
 });
 
 test('empty allow-lists are not enforced', () => {
-  assert.equal(evaluateVisibility({ ...good, project: 'ANY', issueType: 'Bug' }, { publicSecurityLevels: ['Public-Global'] }).visible, true);
+  assert.equal(evaluateVisibility({ ...good, project: 'ANY', issueType: 'Bug' }, { publicSecurityLevels: ['Public-Global'], allowedFixVersions: ['Up Next'] }).visible, true);
 });
 
 test('toJiraValue maps by schema', () => {

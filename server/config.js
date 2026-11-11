@@ -23,4 +23,6 @@ export const config = {
   allowedIssueTypes: list(process.env.ALLOWED_ISSUE_TYPES, []),
   // Security levels (case-insensitive exact match) considered public. An unset level is NOT public.
   publicSecurityLevels: list(process.env.PUBLIC_SECURITY_LEVELS, ['Public-Global']),
+  // An issue needs at least one of these Fix Versions (case-insensitive exact match).
+  allowedFixVersions: list(process.env.ALLOWED_FIX_VERSIONS, ['Current Development', 'Up Next', 'Following Release', 'Future Consideration']),
 };
